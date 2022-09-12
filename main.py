@@ -8,6 +8,7 @@ if platform.system() == 'Windows':
     from selenium.webdriver.chrome.service import Service as ChromeService
     from selenium.webdriver.chrome.options import Options
 import json
+from time import sleep
 
 def open_browser():
     global driver
@@ -28,6 +29,7 @@ open_browser()
 
 driver.get('https://admin.plugandpay.nl')
 
+# LOGIN
 email = driver.find_element(By.ID, 'email')
 email.send_keys(creds["user"])
 psswrd = driver.find_element(By.ID, 'password')
@@ -36,13 +38,28 @@ driver.find_element(By.XPATH, '//button[@class="button has-arrow-right"]').click
 
 driver.get('https://admin.plugandpay.nl/contracts')
 
-table = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 'orders')))
-orders = table.find_elements(By.XPATH, './/tbody/tr')
+page_list = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//ul[@class="pagination-list"]')))
+# current_page = int(page_list.find_element(By.XPATH,'//li[@class="is-current"]').text)
+# last_page = int(page_list.find_elements(By.TAG_NAME, 'a')[-2].text)
+current_page = 1
+last_page = 4
 order_hrefs = []
-for order in orders:
-    state = order.find_element(By.XPATH,'.//span[contains(@class, "tag")]').text
-    if state == 'Actief':
-        order_hrefs.append(order.find_element(By.TAG_NAME, 'a').get_attribute('href'))
+while current_page < last_page:
+    page_list = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//ul[@class="pagination-list"]')))
+    current_page = int(page_list.find_element(By.XPATH,'//li[@class="is-current"]').text)
+    print(str(current_page) + 'of' + str(last_page))
+    sleep(2)
+    # READ TABLE WITH ORDER LINKS
+    table = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 'orders')))
+    orders = table.find_elements(By.XPATH, './/tbody/tr')
+    for order in orders:
+        state = order.find_element(By.XPATH,'.//span[contains(@class, "tag")]').text
+        if state == 'Actief':
+            order_hrefs.append(order.find_element(By.TAG_NAME, 'a').get_attribute('href'))
+        else:
+            continue
+    if current_page < last_page:
+        page_list.find_elements(By.TAG_NAME, 'a')[-1].click()
     else:
         continue
 for href in order_hrefs:
