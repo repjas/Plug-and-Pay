@@ -39,10 +39,8 @@ driver.find_element(By.XPATH, '//button[@class="button has-arrow-right"]').click
 driver.get('https://admin.plugandpay.nl/contracts')
 
 page_list = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//ul[@class="pagination-list"]')))
-# current_page = int(page_list.find_element(By.XPATH,'//li[@class="is-current"]').text)
-# last_page = int(page_list.find_elements(By.TAG_NAME, 'a')[-2].text)
+last_page = int(page_list.find_elements(By.TAG_NAME, 'a')[-2].text)
 current_page = 1
-last_page = 4
 order_hrefs = []
 while current_page < last_page:
     page_list = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//ul[@class="pagination-list"]')))
