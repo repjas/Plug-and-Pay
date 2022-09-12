@@ -7,6 +7,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 if platform.system() == 'Windows':
     from selenium.webdriver.chrome.service import Service as ChromeService
     from selenium.webdriver.chrome.options import Options
+import json
 
 def open_browser():
     global driver
@@ -17,15 +18,18 @@ def open_browser():
     elif platform.system() == 'Linux':
         driver = webdriver.Chrome('/usr/bin/chromedriver')
 
+with open('creds.txt') as f:
+    data = f.read()
+creds = json.loads(data)
 
 open_browser()
 
 driver.get('https://admin.plugandpay.nl')
 
 email = driver.find_element(By.ID, 'email')
-email.send_keys('ted@askted.nl')
+email.send_keys(creds["user"])
 psswrd = driver.find_element(By.ID, 'password')
-psswrd.send_keys('pKMNXmy29ZGTj2iLynoz')
+psswrd.send_keys(creds["password"])
 driver.find_element(By.XPATH, '//button[@class="button has-arrow-right"]').click()
 
 driver.get('https://admin.plugandpay.nl/contracts')
