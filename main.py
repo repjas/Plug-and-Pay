@@ -17,6 +17,8 @@ def open_browser():
         driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
     elif platform.system() == 'Linux':
         driver = webdriver.Chrome('/usr/bin/chromedriver')
+    elif platform.system() == 'Darwin':
+        driver = webdriver.Chrome()
 
 with open('creds.txt') as f:
     data = f.read()
