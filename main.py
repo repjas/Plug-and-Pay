@@ -75,3 +75,4 @@ for href in order_hrefs:
     sleep(2)
 
 driver.quit()
+print('Orders aangepast... Browser afgesloten...')
