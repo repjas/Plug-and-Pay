@@ -21,12 +21,14 @@ def open_browser():
     elif platform.system() == 'Darwin':
         driver = webdriver.Chrome()
 
+new_date = input('Please enter new date in format (dd-mm-yyyy):')
+
 with open('creds.txt') as f:
     data = f.read()
 creds = json.loads(data)
 
+# OPEN BROWSER
 open_browser()
-
 driver.get('https://admin.plugandpay.nl')
 
 # LOGIN
@@ -36,11 +38,13 @@ psswrd = driver.find_element(By.ID, 'password')
 psswrd.send_keys(creds["password"])
 driver.find_element(By.XPATH, '//button[@class="button has-arrow-right"]').click()
 
+# GET NUMBER OF PAGES
 driver.get('https://admin.plugandpay.nl/contracts')
-
 page_list = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//ul[@class="pagination-list"]')))
 last_page = int(page_list.find_elements(By.TAG_NAME, 'a')[-2].text)
 current_page = 1
+
+# ADD ALL 'ACTIEF' CONTRACTS TO LIST
 order_hrefs = []
 while current_page < last_page:
     page_list = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//ul[@class="pagination-list"]')))
@@ -60,9 +64,14 @@ while current_page < last_page:
         page_list.find_elements(By.TAG_NAME, 'a')[-1].click()
     else:
         continue
+
+# CHANGE DATE FOR CONTRACTS IN LIST
 for href in order_hrefs:
     driver.get(href)
     date = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//div[@class="box-body"]'))).find_element(By.XPATH, './/input[@class="input"]')
     date.clear()
-    date.send_keys('30-09-2022')
+    date.send_keys(new_date)
     driver.find_element(By.XPATH, '//button[@type="submit"]').click()
+    sleep(2)
+
+driver.quit()
