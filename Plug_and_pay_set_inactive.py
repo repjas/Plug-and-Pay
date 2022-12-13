@@ -25,6 +25,8 @@ with open('creds.txt') as f:
     data = f.read()
 creds = json.loads(data)
 
+input('!!! ALLES WORDT OP INACTIEF GEZET. DRUK OP EEN TOETS OM VERDER TE GAAN !!!')
+
 # OPEN BROWSER
 open_browser()
 driver.get('https://admin.plugandpay.nl')
